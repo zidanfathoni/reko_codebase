@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 
 import 'infrastructure/components/atom/Custom_errorBuilder.dart';
+import 'infrastructure/config/device_helper/config.dart';
+import 'infrastructure/config/permission_helper/permission_handler.dart';
 import 'infrastructure/config/shared_pref_helper/shared_pref_helper.dart';
 import 'infrastructure/navigation/navigation.dart';
 import 'infrastructure/navigation/routes.dart';
@@ -13,9 +16,12 @@ import 'infrastructure/theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Get.put(DeviceConfig()).init();
   var initialRoute = await Routes.initialRoute;
   //init shared pref
+  await dotenv.load(fileName: ".env");
   await MySharedPref.init();
+  PermissionHandler().init();
   runApp(Main(initialRoute));
 }
 

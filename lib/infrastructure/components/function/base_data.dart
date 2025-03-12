@@ -48,10 +48,50 @@ class ColorPalettes {
   static Color primaryContainer = const Color(0xFF00AE50);
   static Color secondary = const Color(0xFFFFFFFF);
   static Color secondaryContainer = const Color(0xFFF3FFF9);
-  static Color secondaryContainer2 = const Color(0xFFE8E4E1);
   static Color tertiary = const Color(0xFF263238);
   static Color tertiaryContainer = const Color(0xFF263238);
   static Color fourth = const Color(0xFFBFBFBF);
+}
+
+class ColorData {
+  ColorData._();
+  static Color primary = const Color(0xFF00CD70);
+  static Color primaryAccent = const Color(0xFF00AE50);
+  static Color secondary = const Color(0xFFFFFFFF);
+  static Color secondaryAccent = const Color(0xFFF3FFF9);
+  static Color tertiary = const Color(0xFF263238);
+  static Color tertiaryAccent = const Color(0xFF263238);
+  static Color fourth = const Color(0xFFBFBFBF);
+
+  static Color background = const Color(0xFFF5F5F5);
+  static Color backgroundAccent = const Color(0xFFE0E0E0);
+  static Color foreground = const Color(0xFF000000);
+  static Color foregroundAccent = const Color(0xFF757575);
+  static Color error = const Color(0xFFD32F2F);
+  static Color errorAccent = const Color(0xFFFFCDD2);
+  static Color success = const Color(0xFF388E3C);
+  static Color successAccent = const Color(0xFFC8E6C9);
+  static Color warning = const Color(0xFFFFA000);
+  static Color warningAccent = const Color(0xFFFFF8E1);
+  static Color info = const Color(0xFF1976D2);
+  static Color infoAccent = const Color(0xFFBBDEFB);
+  static Color transparent = const Color(0x00000000);
+  static Color appBarColor = const Color(0xFF609966);
+  static Color blackBackground = const Color(0xFF000000);
+  static Color whiteBackground = const Color(0xFFFFFFFF);
+  static Color footerBackground = const Color(0xFF0B0B0B);
+  static Color card = const Color(0xFFFFFFFF);
+  static Color cardAccent = const Color(0xFFE0E0E0);
+  static Color cardShadow = const Color(0xFF000000);
+  static Color cardShadowAccent = const Color(0x33000000);
+  static Color cardBorder = const Color(0xFF000000);
+  static Color cardBorderAccent = const Color(0xFFE0E0E0);
+  static Color cardTitle = const Color(0xFF000000);
+  static Color cardTitleAccent = const Color(0xFF757575);
+  static Color cardSubtitle = const Color(0xFF000000);
+  static Color cardSubtitleAccent = const Color(0xFF757575);
+  static Color cardContent = const Color(0xFF000000);
+  static Color cardContentAccent = const Color(0xFF757575);
 }
 
 class ZFBaseColors {
