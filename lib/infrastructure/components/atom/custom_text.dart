@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../function/base_data.dart';
 import '../function/config.dart';
@@ -75,20 +75,17 @@ class CustomText extends StatelessWidget {
         fontSizes = ZFFontSizeCustom.labelSmall;
         break;
     }
-    return Flexible(
-      fit: FlexFit.loose,
-      child: Text(
-        text,
-        textAlign: textAlign ?? TextAlign.left,
-        style: TextStyle(
-          fontSize: fontSizes,
-          fontWeight: weight == FontWeight.bold ? FontWeight.w500 : weight,
-          overflow: TextOverflow.ellipsis,
-          decoration: decoration,
-          color: colorText,
-        ),
-        maxLines: maxLines,
+    return Text(
+      text,
+      textAlign: textAlign ?? TextAlign.left,
+      style: TextStyle(
+        fontSize: fontSizes,
+        fontWeight: weight == FontWeight.bold ? FontWeight.w500 : weight,
+        overflow: TextOverflow.ellipsis,
+        decoration: decoration,
+        color: colorText,
       ),
+      maxLines: maxLines,
     );
   }
 }

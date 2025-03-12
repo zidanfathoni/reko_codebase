@@ -46,6 +46,8 @@ dependencies:
   shared_preferences: ^2.5.2
   permission_handler: ^11.4.0
   flex_color_scheme: ^8.1.1
+  easy_refresh: ^3.4.0
+  device_info_plus: ^11.3.3
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +65,29 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets: 
+    - .env
+  fonts:
+    - family: CarosSoftFamily
+      fonts:
+        - asset: assets/fonts/CarosSoftThin.ttf
+          weight: 100 # Thin
+        - asset: assets/fonts/CarosSoftExtraLight.ttf
+          weight: 200 # ExtraLight
+        - asset: assets/fonts/CarosSoftLight.ttf
+          weight: 300 # Light
+        - asset: assets/fonts/CarosSoft.ttf
+          weight: 400 # Regular
+        - asset: assets/fonts/CarosSoftMedium.ttf
+          weight: 500 # Medium
+        - asset: assets/fonts/CarosSoftBold.ttf
+          weight: 500 # Bold
+        - asset: assets/fonts/CarosSoftExtraBold.ttf
+          weight: 600 # ExtraBold
+        - asset: assets/fonts/CarosSoftHeavy.ttf
+          weight: 700 # Heavy
+        - asset: assets/fonts/CarosSoftBlack.ttf
+          weight: 800 # Black
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
