@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:card_loading/card_loading.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:reko_codebase/infrastructure/config/device_helper/device_config.dart';
 
 import '../atom/FZ_Text.dart';
 import 'base_data.dart';
@@ -72,6 +75,52 @@ class Helper {
     ),
   );
 
+  Widget refreshPage({required Key key, required Function() onRefresh, required Widget child}) {
+    return EasyRefresh(
+      header: MaterialHeader(
+        hitOver: isBlank,
+        bezierBackgroundAnimation: true,
+        safeArea: true,
+        noMoreIcon: const Icon(Icons.sync),
+        hapticFeedback: true,
+        clamping: true,
+        showBezierBackground: true,
+        bezierBackgroundBounce: true,
+        bezierBackgroundColor: ColorPalettes.primary,
+        valueColor: AlwaysStoppedAnimation(ColorPalettes.primaryContainer),
+        // semanticsLabel: ,
+        triggerOffset: 50.0,
+      ),
+      onRefresh: () async {
+        onRefresh();
+      },
+      key: key,
+      child: child,
+    );
+  }
+
+  Widget refreshWidget({required Key key, required Function() onRefresh, required Widget child}) {
+    return RefreshIndicator(
+      triggerMode: RefreshIndicatorTriggerMode.onEdge,
+      strokeWidth: 2.0,
+      semanticsValue: 'Refresh',
+      semanticsLabel: 'Refresh',
+      backgroundColor: Colors.white,
+      color: Colors.black,
+      notificationPredicate: (notification) {
+        return notification.depth == 0;
+      },
+      key: key,
+      elevation: 0.0,
+      edgeOffset: 0.0,
+      displacement: 40.0,
+      onRefresh: () async {
+        onRefresh();
+      },
+      child: child,
+    );
+  }
+
   static void hideKeyboard() => FocusManager.instance.primaryFocus?.unfocus();
 
   static Future<T?> openBottomSheet<T>(
@@ -84,8 +133,21 @@ class Helper {
     barrierColor: Colors.black.withOpacity(0.7),
     backgroundColor: backgroundColor,
     isDismissible: isDismissible,
-    shape: shape,
+    shape:
+        shape ??
+        const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
     isScrollControlled: true,
+    settings: RouteSettings(name: 'bottomSheet'),
+    enterBottomSheetDuration: const Duration(milliseconds: 300),
+    exitBottomSheetDuration: const Duration(milliseconds: 300),
+    clipBehavior: Clip.antiAlias,
+    enableDrag: true,
+    persistent: true,
   );
 
   /// Show error dialog from response model
@@ -109,36 +171,112 @@ class Helper {
     );
   }
 
-  /// Show info dialog
-  static void showDialog(String message) async {
-    await Get.dialog(
-      CupertinoAlertDialog(
-        title: const Text('Info'),
-        content: Text(message),
-        actions: [CupertinoDialogAction(onPressed: Get.back, child: const Text('Okay'))],
-      ),
-    );
-  }
-
   /// Show alert dialog
-  static Future<void> showAlertDialog({String? message, String? title, Function()? onPress}) async {
+  static Future<void> showDialog({
+    String? name,
+    String? message,
+    required String title,
+    String? submitText,
+    String? cancelText,
+    Function()? onSubmit,
+    Function()? onCancel,
+    Color? submitColor,
+    Color? cancelColor,
+    bool barrierDismissible = true,
+    Object? arguments,
+    Widget? content,
+    List<Widget>? actions,
+  }) async {
     await Get.dialog(
-      CupertinoAlertDialog(
-        title: Text('$title'),
-        content: Text('$message'),
-        actions: <Widget>[
-          CupertinoDialogAction(
-            isDefaultAction: true,
-            onPressed: onPress,
-            child: const Text('Okay'),
+      barrierDismissible: barrierDismissible,
+      transitionCurve: Curves.easeInOut,
+      transitionDuration: const Duration(milliseconds: 200),
+      routeSettings: RouteSettings(name: 'alertDialog ${name ?? 'default'}'),
+      name: 'alertDialog ${name ?? 'default'}',
+      arguments: arguments,
+
+      useSafeArea: true,
+
+      Platform.isIOS
+          ? CupertinoAlertDialog(
+            title: Text('$title'),
+            content: content ?? Text(message ?? ''),
+
+            actions:
+                actions ??
+                <Widget>[
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: submitColor ?? ColorData.primary,
+                      animationDuration: const Duration(milliseconds: 500),
+                      shadowColor: submitColor ?? ColorData.primary,
+                      splashFactory: InkRipple.splashFactory,
+                      surfaceTintColor: submitColor ?? ColorData.primary,
+                    ),
+
+                    onPressed: () {
+                      Get.back();
+                      onSubmit;
+                    },
+                    child: Text(submitText ?? 'OK'),
+                  ),
+
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: cancelColor ?? Colors.red,
+                      animationDuration: const Duration(milliseconds: 500),
+                      shadowColor: cancelColor ?? Colors.red,
+                      splashFactory: InkRipple.splashFactory,
+                      surfaceTintColor: cancelColor ?? Colors.red,
+                    ),
+                    onPressed: () {
+                      Get.back();
+                      onCancel;
+                    },
+                    child: Text(cancelText ?? 'Cancel'),
+                  ),
+                ],
+          )
+          : AlertDialog(
+            title: Text('$title'),
+            content: content ?? Text(message ?? ''),
+            scrollable: true,
+            clipBehavior: Clip.antiAlias,
+            semanticLabel: 'Alert Dialog ${name ?? 'default'}',
+
+            actions: <Widget>[
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: submitColor ?? ColorData.primary,
+                  animationDuration: const Duration(milliseconds: 500),
+                  shadowColor: submitColor ?? ColorData.primary,
+                  splashFactory: InkRipple.splashFactory,
+                  surfaceTintColor: submitColor ?? ColorData.primary,
+                ),
+
+                onPressed: () {
+                  Get.back();
+                  onSubmit;
+                },
+                child: Text(submitText ?? 'OK'),
+              ),
+
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: cancelColor ?? Colors.red,
+                  animationDuration: const Duration(milliseconds: 500),
+                  shadowColor: cancelColor ?? Colors.red,
+                  splashFactory: InkRipple.splashFactory,
+                  surfaceTintColor: cancelColor ?? Colors.red,
+                ),
+                onPressed: () {
+                  Get.back();
+                  onCancel;
+                },
+                child: Text(cancelText ?? 'Cancel'),
+              ),
+            ],
           ),
-          const CupertinoDialogAction(
-            isDestructiveAction: true,
-            onPressed: closeDialog,
-            child: Text('Cancel'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -158,42 +296,6 @@ class Helper {
   /// [type] : Type of the message for different background color.
   /// [onTap] : An event for onTap.
   /// [actionName] : The name for the action.
-
-  static void showMessage({
-    String? message,
-    MessageType type = MessageType.information,
-    Function()? onTap,
-    String? actionName,
-  }) {
-    if (message == null || message.isEmpty) return;
-    closeDialog();
-    closeSnackbar();
-    var backgroundColor = Colors.black;
-    switch (type) {
-      case MessageType.error:
-        backgroundColor = Colors.red;
-        break;
-      case MessageType.information:
-        backgroundColor = Colors.blue;
-        break;
-      case MessageType.success:
-        backgroundColor = Colors.green;
-        break;
-    }
-    Future.delayed(const Duration(seconds: 0), () {
-      Get.rawSnackbar(
-        messageText: Text(message),
-        mainButton:
-            actionName != null
-                ? TextButton(onPressed: onTap ?? Get.back, child: Text(actionName))
-                : null,
-        backgroundColor: backgroundColor,
-        margin: const EdgeInsets.all(10),
-        borderRadius: 10,
-        snackStyle: SnackStyle.FLOATING,
-      );
-    });
-  }
 
   static void unfocusKeyboard(BuildContext context) {
     var currentFocus = FocusScope.of(context);
@@ -225,54 +327,96 @@ class Helper {
   Future<void> openSettings({
     required String label,
     required String message,
-    required Function() afterCreateUpdate,
+    Function()? afterCreateUpdate,
   }) async {
-    return await Get.defaultDialog(
-      titlePadding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-      title: 'Permissions $label',
-      titleStyle: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-      // middleText: message,
-      content: Column(
-        children: [
-          FZText(
-            text: message,
-            fontType: FontType.bodyMedium,
-            textAlignment: MainAxisAlignment.start,
-            maxLines: 8,
+    await Get.dialog(
+      transitionCurve: Curves.easeInOut,
+      transitionDuration: const Duration(milliseconds: 200),
+      routeSettings: RouteSettings(name: 'openSettings $label'),
+      name: 'openSettings $label',
+
+      useSafeArea: true,
+
+      Platform.isIOS
+          ? CupertinoAlertDialog(
+            title: Text('Permission $label', style: TextStyle(fontSize: 20)),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              textBaseline: TextBaseline.alphabetic,
+              children: [Text('$message. Please go to settings to enable $label')],
+            ),
+
+            actions: <Widget>[
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: ColorData.primary,
+                  animationDuration: const Duration(milliseconds: 500),
+                  shadowColor: ColorData.primary,
+                  splashFactory: InkRipple.splashFactory,
+                  surfaceTintColor: ColorData.primary,
+                ),
+
+                onPressed: () {
+                  Get.back();
+                  afterCreateUpdate;
+                },
+                child: const Text('Setting'),
+              ),
+
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  animationDuration: const Duration(milliseconds: 500),
+                  shadowColor: Colors.red,
+                  splashFactory: InkRipple.splashFactory,
+                  surfaceTintColor: Colors.red,
+                ),
+                onPressed: Get.back,
+                child: const Text('Cancel'),
+              ),
+            ],
+          )
+          : AlertDialog(
+            title: Text('Permission $label', style: TextStyle(fontSize: 20)),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Text('$message'), Text('Please go to settings to enable $label')],
+            ),
+            scrollable: true,
+            clipBehavior: Clip.antiAlias,
+            semanticLabel: 'Open Setting $label',
+
+            actions: <Widget>[
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: ColorData.primary,
+                  animationDuration: const Duration(milliseconds: 500),
+                  shadowColor: ColorData.primary,
+                  splashFactory: InkRipple.splashFactory,
+                  surfaceTintColor: ColorData.primary,
+                ),
+
+                onPressed: () {
+                  Get.back();
+                  afterCreateUpdate;
+                },
+                child: const Text('Setting'),
+              ),
+
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  animationDuration: const Duration(milliseconds: 500),
+                  shadowColor: Colors.red,
+                  splashFactory: InkRipple.splashFactory,
+                  surfaceTintColor: Colors.red,
+                ),
+                onPressed: Get.back,
+                child: const Text('Cancel'),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          FZText(
-            text: 'Buka Pengaturan Aplikasi untuk mengizinkan $label',
-            fontType: FontType.bodyMedium,
-            textAlignment: MainAxisAlignment.start,
-            maxLines: 8,
-          ),
-        ],
-      ),
-      confirm: ElevatedButton(
-        onPressed: () {
-          Get.back();
-          afterCreateUpdate();
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
-          animationDuration: const Duration(seconds: 1),
-        ),
-        child: const Text('Settings'),
-      ),
-      cancel: ElevatedButton(
-        onPressed: () {
-          Get.back();
-        },
-        style: ElevatedButton.styleFrom(
-          surfaceTintColor: Colors.red,
-          backgroundColor: Colors.white,
-          animationDuration: const Duration(seconds: 1),
-        ),
-        child: const Text('Batal', style: TextStyle(color: Colors.red)),
-      ),
-      confirmTextColor: Colors.black,
-      cancelTextColor: Colors.red,
     );
   }
 }

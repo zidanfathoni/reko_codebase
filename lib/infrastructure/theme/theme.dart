@@ -42,7 +42,8 @@ class RkTheme {
     ),
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
-    fontFamily: FontFamilyType.primary,
+    // fontFamily: FontFamilyType.primary,
+    fontFamily: 'CarosSoftFamily',
   );
   // The defined dark theme.
   static ThemeData dark = FlexThemeData.dark(
@@ -63,6 +64,7 @@ class RkTheme {
     ),
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
-    fontFamily: FontFamilyType.primary,
+    // fontFamily: FontFamilyType.primary,
+    fontFamily: 'CarosSoftFamily',
   );
 }
