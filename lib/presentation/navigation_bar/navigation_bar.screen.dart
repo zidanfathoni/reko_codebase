@@ -36,17 +36,19 @@ class NavigationBarScreen extends GetView<NavigationBarController> {
     return Obx(
       () => Scaffold(
         bottomNavigationBar: ClipRRect(
-          // borderRadius: const BorderRadius.only(
-          //   topRight: Radius.circular(20),
-          //   topLeft: Radius.circular(20),
-          //   // bottomLeft: Radius.circular(40),
-          //   // bottomRight: Radius.circular(40),
-          // ),
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(20),
+            topLeft: Radius.circular(20),
+            // bottomLeft: Radius.circular(40),
+            // bottomRight: Radius.circular(40),
+          ),
           child:
               Platform.isIOS
                   ? CupertinoTabBar(
                     // backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                     items: bottomNavigationBarItems,
+                    border: Border(top: BorderSide(color: Colors.grey[300]!, width: 0.5)),
+                    activeColor: ColorPalettes.primary,
                     currentIndex: controller.selectedMenu.value,
                     onTap: (index) {
                       onTap(index);
