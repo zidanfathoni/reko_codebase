@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 class FontFamilyType {
   FontFamilyType._();
   static String? primary = GoogleFonts.plusJakartaSans().fontFamily;
+  static String? secondary = 'CarosSoftFamily';
 }
 
 class PlaceHolderImage {
