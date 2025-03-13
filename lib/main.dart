@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import 'infrastructure/components/atom/Custom_errorBuilder.dart';
+import 'infrastructure/config/deep_link_helper/deep_link_helper.dart';
 import 'infrastructure/config/device_helper/config.dart';
 import 'infrastructure/config/permission_helper/permission_handler.dart';
 import 'infrastructure/config/shared_pref_helper/shared_pref_helper.dart';
@@ -15,14 +16,26 @@ import 'infrastructure/navigation/routes.dart';
 import 'infrastructure/theme/theme.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  Get.put(DeviceConfig()).init();
+  await _initializeApp();
   var initialRoute = await Routes.initialRoute;
-  //init shared pref
+  runApp(Main(initialRoute));
+}
+
+Future<void> _initializeApp() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  _initializeDependencies();
+  await _initializeServices();
+}
+
+Future<void> _initializeDependencies() async {
+  Get.put(DeviceConfig()).init();
+}
+
+Future<void> _initializeServices() async {
   await MySharedPref.init();
   PermissionHandler().init();
-  runApp(Main(initialRoute));
+  DeepLinkHelper().initDeepLinks();
 }
 
 class Main extends StatelessWidget {

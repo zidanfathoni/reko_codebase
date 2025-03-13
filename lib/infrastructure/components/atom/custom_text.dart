@@ -79,6 +79,7 @@ class CustomText extends StatelessWidget {
       text,
       textAlign: textAlign ?? TextAlign.left,
       style: TextStyle(
+        fontFamily: FontFamilyType.secondary,
         fontSize: fontSizes,
         fontWeight: weight == FontWeight.bold ? FontWeight.w500 : weight,
         overflow: TextOverflow.ellipsis,
